@@ -22,6 +22,7 @@ MonoBehaviour:
       m_Range: 1
       m_Curve:
         serializedVersion: 2
+        m_Curve:
         - serializedVersion: 3
           time: 0
           value: 0
