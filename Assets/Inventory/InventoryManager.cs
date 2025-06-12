@@ -7,7 +7,7 @@ public class InventoryManager : MonoBehaviour
 
     public void AddItem(string itemId, int amount = 1)
     {
-        ItemData data = StoreItems.Instance.GetItem(itemId);
+        ItemData data = StoreItems.Instance.GetItemByID(itemId);
         if (data == null)
         {
             Debug.LogWarning("Item ID not found: " + itemId);
@@ -28,6 +28,11 @@ public class InventoryManager : MonoBehaviour
     {
         inventory.TryGetValue(itemId, out InventoryItem item);
         return item;
+    }
+
+    public List<InventoryItem> GetAllItems()
+    {
+        return new List<InventoryItem>(inventory.Values);
     }
 }
 

@@ -42,10 +42,15 @@ public class StoreItems : MonoBehaviour
         Debug.Log("Loaded " + itemsByID.Count + " items.");
     }
 
-    public ItemData GetItem(string id)
+    public ItemData GetItemByID(string itemId)
     {
-        itemsByID.TryGetValue(id, out var item);
+        itemsByID.TryGetValue(itemId, out var item);
         return item;
+    }
+
+    public List<ItemData> GetAllItems()
+    {
+        return new List<ItemData>(itemsByID.Values);
     }
 }
 
