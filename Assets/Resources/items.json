@@ -1,0 +1,36 @@
+{
+    "Items": [
+        {
+            "itemId": "c6c4de437e234ddd85ec3df6338d744c",
+            "itemName": "Mana Potion",
+            "iconPath": "",
+            "description": "Heal your mana",
+            "itemType": "",
+            "isConsumable": true,
+            "isEquippable": false,
+            "isStackable": true,
+            "dropChance": 0.0,
+            "rarity": "3",
+            "boost": {
+                "Hp": {
+                    "maxHP": 0,
+                    "Hp": 0
+                },
+                "Mana": {
+                    "maxMana": 0,
+                    "Mana": 50
+                },
+                "Attack": {
+                    "phyAttack": 0,
+                    "magAttack": 0
+                },
+                "Defence": {
+                    "phyDefence": 0,
+                    "magDefence": 0
+                },
+                "charisma": 0,
+                "spd": 0
+            }
+        }
+    ]
+}

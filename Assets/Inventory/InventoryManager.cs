@@ -10,17 +10,26 @@ public class InventoryManager : MonoBehaviour
         ItemData data = StoreItems.Instance.GetItemByID(itemId);
         if (data == null)
         {
-            Debug.LogWarning("Item ID not found: " + itemId);
+            Debug.LogWarning("Attempted to add an item with an invalid ID: " + itemId);
             return;
         }
 
         if (inventory.ContainsKey(itemId))
         {
-            inventory[itemId].quantity += amount;
+            if (data.isStackable)
+            {
+                inventory[itemId].quantity += amount;
+                Debug.Log($"Added {amount} to '{data.itemName}'. New total: {inventory[itemId].quantity}.");
+            }
+            else
+            {
+                Debug.LogWarning($"Tried to stack unstackable item: '{data.itemName}'.");
+            }
         }
         else
         {
             inventory[itemId] = new InventoryItem(data, amount);
+            Debug.Log($"Added new item to inventory: '{data.itemName}'.");
         }
     }
 
