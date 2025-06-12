@@ -1,8 +1,10 @@
 using UnityEngine;
 using System.Collections.Generic;
-
+using System;
 public class InventoryManager : MonoBehaviour
 {
+    public event Action OnInventoryChanged;
+
     private Dictionary<string, InventoryItem> inventory = new();
 
     public void AddItem(string itemId, int amount = 1)
@@ -19,17 +21,31 @@ public class InventoryManager : MonoBehaviour
             if (data.isStackable)
             {
                 inventory[itemId].quantity += amount;
-                Debug.Log($"Added {amount} to '{data.itemName}'. New total: {inventory[itemId].quantity}.");
             }
             else
             {
-                Debug.LogWarning($"Tried to stack unstackable item: '{data.itemName}'.");
+                Debug.Log($"Cannot stack unstackable item: '{data.itemName}'. Item not added.");
             }
         }
         else
         {
             inventory[itemId] = new InventoryItem(data, amount);
-            Debug.Log($"Added new item to inventory: '{data.itemName}'.");
+        }
+
+        OnInventoryChanged?.Invoke();
+    }
+
+    public void RemoveItem(string itemId, int amount = 1)
+    {
+        if (inventory.TryGetValue(itemId, out InventoryItem item))
+        {
+            item.quantity -= amount;
+            if (item.quantity <= 0)
+            {
+                inventory.Remove(itemId);
+            }
+
+            OnInventoryChanged?.Invoke();
         }
     }
 
