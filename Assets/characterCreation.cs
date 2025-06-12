@@ -42,6 +42,7 @@ public class characterCreation : MonoBehaviour
 [System.Serializable]
 public class characterInventory
 {
+    public int current_id;
     public List<character> characterList = new List<character>();
     public void makeNewCharacter(string name)
     {
@@ -49,10 +50,11 @@ public class characterInventory
         string characterData = System.IO.File.ReadAllText(path);
 
         character new_character = JsonUtility.FromJson<character>(characterData);
-
+        new_character.set_id(current_id);
+        current_id += 1;
         characterList.Add(new_character);
     }
-    
+
     public character getCharacter(int id)
     {
         return characterList.Find(x => x.id == id);
@@ -76,5 +78,10 @@ public class character
     public int charisma;
     public int speed;
     public string item;
+
+    public void set_id(int input_id)
+    {
+        id = input_id;
+    }
 
 }
