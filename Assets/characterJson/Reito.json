@@ -1,0 +1,15 @@
+{
+    "name":"Default Character",
+    "id":0,
+    "Hp":100,
+    "maxHp":100,
+    "maxMana":100,
+    "mana":100,
+    "phyAttack":100,
+    "phyDefence":100,
+    "magAttack":100,
+    "magDefence":100,
+    "charisma":100,
+    "speed":100,
+    "item":""
+}
