@@ -2,15 +2,47 @@
     "Items": [
         {
             "itemId": "c6c4de437e234ddd85ec3df6338d744c",
-            "itemName": "Mana Potion",
+            "itemName": "Dev Sword",
             "iconPath": "",
-            "description": "Heal your mana",
+            "description": "Ur not suppose to have this.\nThe HiroGakuRPG gods made this, probably.",
+            "itemType": "",
+            "isConsumable": false,
+            "isEquippable": true,
+            "isStackable": false,
+            "dropChance": 0.0,
+            "rarity": "5",
+            "boost": {
+                "Hp": {
+                    "maxHP": 999,
+                    "Hp": 0
+                },
+                "Mana": {
+                    "maxMana": 999,
+                    "Mana": 0
+                },
+                "Attack": {
+                    "phyAttack": 999,
+                    "magAttack": 999
+                },
+                "Defence": {
+                    "phyDefence": 999,
+                    "magDefence": 999
+                },
+                "charisma": 999,
+                "spd": 999
+            }
+        },
+        {
+            "itemId": "1b3497467d4b4c8f930745697343373e",
+            "itemName": "Mana Potion (S)",
+            "iconPath": "",
+            "description": "Heals a bit of MP",
             "itemType": "",
             "isConsumable": true,
             "isEquippable": false,
             "isStackable": true,
             "dropChance": 0.0,
-            "rarity": "3",
+            "rarity": "",
             "boost": {
                 "Hp": {
                     "maxHP": 0,
@@ -18,7 +50,7 @@
                 },
                 "Mana": {
                     "maxMana": 0,
-                    "Mana": 50
+                    "Mana": 10
                 },
                 "Attack": {
                     "phyAttack": 0,
