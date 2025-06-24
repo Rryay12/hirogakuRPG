@@ -1,0 +1,11 @@
+{
+    "name":"Reito",
+    "id":0,
+    "Hp":100,
+    "mana":100,
+    "item":"",
+    "randomMultiplier":5,
+    "alive":true,
+    "xp":0,
+    "level":1
+}
