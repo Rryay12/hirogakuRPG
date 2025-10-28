@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEditor.UI;
 using UnityEngine;
-
+using System.IO;
 
 
 [System.Serializable]
@@ -21,7 +21,7 @@ public class CharacterInventory
         if (!System.IO.File.Exists(path))
         {
             Debug.LogWarning("Character file not found. Creating new Character.");
-            new_character = new Character();  // or load default template
+            new_character = new Character(); 
         }
         else
         {
@@ -35,7 +35,13 @@ public class CharacterInventory
 
     public Character getCharacter(int id)
     {
-        return manager.load<Character>(Application.dataPath + "/characterJson/charJson/usingChar/" + id + ".json");
+        string filepath = Application.dataPath + "/characterJson/charJson/usingChar/" + id + ".json";
+        if (Directory.Exists(filepath) == false)
+        {
+            Debug.LogWarning("Character file not found: " + filepath);
+            return null;
+        }
+        return manager.load<Character>(filepath);
     }
 
 }
@@ -55,10 +61,20 @@ public class Character : SavableObject
     public bool alive;
     public double XP;
     public int level;
+    public string characterImagePath;
+    public Move[] moves = new Move[4];
+    public string[] moveNames;
+
+    public string name;
 
     public void set_id(int input_id)
     {
         id = input_id;
+    }
+
+    public bool isalive()
+    {
+        return Hp > 0;
     }
 
     public void initializeCharacter(string name)
@@ -69,15 +85,46 @@ public class Character : SavableObject
         Hp = def_charstats.maxHp;
         mana = def_charstats.maxMana;
         def_charstats.randomizeStats(randomMultiplier);
+        characterImagePath = Application.dataPath + "characterImages/" + name + ".png";
+        setmove();
+
+    }
+
+    public void setmove()
+    {
+        int count = 0;
+        foreach (string moveName in moveNames)
+        {
+            Debug.Log(moveName);
+            Move move = new MoveInventory().getMove(moveName);
+            moves[count] = move;
+            count++;
+        }
+    }
+    
+    public Move GetMove(string moveName)
+    {
+        foreach (Move move in moves)
+        {
+            if (move.name == moveName)
+            {
+                return move;
+            }
+        }
+        Debug.LogWarning("Move not found: " + moveName);
+        return null;
     }
 
 
     public override void loadObject(bool willLoad = true)
     {
-        if (willLoad){
-        def_charstats = manager.load<Stats>(Application.dataPath + "/characterJson/charStatsJson/usingCharstats/"+id.ToString()+".json") as Stats;
-        battle_charstats = manager.load<Stats>(Application.dataPath + "/characterJson/charStatsJson/battleCharstats/"+id.ToString()+".json") as Stats;
+        if (willLoad)
+        {
+            def_charstats = manager.load<Stats>(Application.dataPath + "/characterJson/charStatsJson/usingCharstats/" + id.ToString() + ".json");
+            battle_charstats = manager.load<Stats>(Application.dataPath + "/characterJson/charStatsJson/battleCharstats/" + id.ToString() + ".json");
+            setmove();
         }
+
     }
 
     public override void saveObject(bool willSave = true)
