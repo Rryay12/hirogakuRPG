@@ -9,12 +9,13 @@ public class testRunScript : MonoBehaviour
     public CharacterInventory exampleCharacter = new CharacterInventory();
     public characterDeck myDeck = new characterDeck();
     public characterDeck enemyDeck = new characterDeck();
-    public battleLogic exampleBattleLogic = new battleLogic();
-
+    public GameObject battleLogicObject;
+    battleLogic exampleBattleLogic;
     void Start()
     {
         myDeck.addCharacterToDeck(0);
         enemyDeck.addCharacterToDeck(1);
+        exampleBattleLogic = battleLogicObject.GetComponent<battleLogic>();
 
         exampleBattleLogic.initializeBattle(myDeck, enemyDeck);
     }

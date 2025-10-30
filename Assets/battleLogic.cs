@@ -11,10 +11,10 @@ public class battleLogic: MonoBehaviour
     Character[] enemyCharactersInDeck;
     Character playerCharacter;
     Character enemyCharacter;
-    Button moveButton0;
-    Button moveButton1;
-    Button moveButton2;
-    Button moveButton3;
+    public Button moveButton0;
+    public Button moveButton1;
+    public Button moveButton2;
+    public Button moveButton3;
 
     int turnCount = 0;
     int actualTurn = 1; //1 for player, -1 for enemy
@@ -25,10 +25,29 @@ public class battleLogic: MonoBehaviour
     {
         playerCharactersInDeck = initializeCharacterDeck(playerDeck);
         enemyCharactersInDeck = initializeCharacterDeck(enemyDeck);
+        initializeCharacters();
         playerCharacter = playerCharactersInDeck[0];
         enemyCharacter = enemyCharactersInDeck[0];
+        initializeUI();
     }
 
+    public void initializeCharacters()
+    {
+        for (int i = 0; i < playerCharactersInDeck.Length; i++)
+        {
+            if (playerCharactersInDeck[i] != null)
+            {
+                playerCharactersInDeck[i].reinitializeCharacter();
+            }
+        }
+        for (int i = 0; i < enemyCharactersInDeck.Length; i++)
+        {
+            if (enemyCharactersInDeck[i] != null)
+            {
+                enemyCharactersInDeck[i].reinitializeCharacter();
+            }
+        }
+    }
     public void initializeUI()
     {
         initializeButtonText(moveButton0, 0);
@@ -42,6 +61,8 @@ public class battleLogic: MonoBehaviour
         Move tmpMove = playerCharacter.moves[id];
         if (tmpMove != null)
         {
+            button.gameObject.SetActive(true);   
+            TextMeshProUGUI text = button.GetComponentInChildren<TextMeshProUGUI>();
             button.GetComponentInChildren<TextMeshProUGUI>().text = tmpMove.name;
         }
         else
