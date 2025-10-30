@@ -1,21 +1,132 @@
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
+using Unity.VisualScripting;
 
 [System.Serializable]
-public class battleLogic
+public class battleLogic: MonoBehaviour
 {
     CharacterInventory playerInventory = new CharacterInventory();
     Character[] playerCharactersInDeck;
     Character[] enemyCharactersInDeck;
-    Character playerCharacer;
+    Character playerCharacter;
     Character enemyCharacter;
+    Button moveButton0;
+    Button moveButton1;
+    Button moveButton2;
+    Button moveButton3;
+
+    int turnCount = 0;
+    int actualTurn = 1; //1 for player, -1 for enemy
+
 
     //initiate the battle logic with two characters
-    public battleLogic(characterDeck playerDeck, characterDeck enemyDeck)
+    public void initializeBattle(characterDeck playerDeck, characterDeck enemyDeck)
     {
         playerCharactersInDeck = initializeCharacterDeck(playerDeck);
         enemyCharactersInDeck = initializeCharacterDeck(enemyDeck);
-        playerCharacer = playerCharactersInDeck[0];
+        playerCharacter = playerCharactersInDeck[0];
         enemyCharacter = enemyCharactersInDeck[0];
+    }
+
+    public void initializeUI()
+    {
+        initializeButtonText(moveButton0, 0);
+        initializeButtonText(moveButton1, 1);
+        initializeButtonText(moveButton2, 2);
+        initializeButtonText(moveButton3, 3);
+    }
+
+    public void initializeButtonText(Button button, int id)
+    {
+        Move tmpMove = playerCharacter.moves[id];
+        if (tmpMove != null)
+        {
+            button.GetComponentInChildren<TextMeshProUGUI>().text = tmpMove.name;
+        }
+        else
+        {
+            button.gameObject.SetActive(false);   
+        }
+    }
+    
+    public void startBattle()
+    {
+        //start battle logic here
+        playerCharacter.reinitializeCharacter();
+        enemyCharacter.reinitializeCharacter();
+        if(playerCharacter.battle_charstats.charisma > enemyCharacter.battle_charstats.charisma)
+        {
+            actualTurn = 1; //player starts
+        }
+        else
+        {
+            actualTurn = -1; //enemy starts
+        }
+    }
+
+    public void playerturn(string action, Move move = null, Item item = null, int replacementCharId = -1)
+    {
+        if (action == "run")
+        {
+            bool escaped = escapeCalculation();
+            if (escaped)
+            {
+                endBattle();
+            }
+        }
+
+        else if (action == "move" && move != null)
+        {
+            makeMove(playerCharacter, enemyCharacter, move);
+        }
+        else if (action == "item" && item != null)
+        {
+
+        }
+        else if (action == "replace" && replacementCharId != -1)
+        {
+            //replace character logic here
+        }
+    }
+    public void onRun()
+    {
+        playerturn("run");
+    }
+
+    public void onItem()
+    {
+        playerturn("item");
+    }
+
+    public void replace(int charId)
+    {
+        playerturn("replace",replacementCharId: charId);
+    }
+
+    public void onMove(int moveID)
+    {
+        playerturn("move", move: playerCharacter.moves[moveID]);
+    }
+
+    public bool escapeCalculation()
+    {
+        float no = Random.value;
+        if (no < 0.3f)
+        {
+            return true;
+        }
+        return false;
+    }
+    
+
+    public void BattleLoop()
+    {
+        //battle loop logic here
+    }
+    public void endBattle()
+    {
+        //end battle logic here
     }
 
     public Character[] initializeCharacterDeck(characterDeck deck)

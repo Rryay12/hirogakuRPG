@@ -8,5 +8,8 @@
     "alive":true,
     "xp":0,
     "level":1,
-    "moveNames":["slash", "burn", "heal"]
+    "characterImagePath":"Assets/characterImages/reito.png",
+    "moveNames":["slash", "burn", "heal"],
+    "attackItemName":"",
+    "defenseItemName":""
 }

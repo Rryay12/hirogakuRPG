@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.UI;
 using UnityEngine;
 using System.IO;
+using Unity.VisualScripting.ReorderableList;
 
 
 [System.Serializable]
@@ -36,7 +37,7 @@ public class CharacterInventory
     public Character getCharacter(int id)
     {
         string filepath = Application.dataPath + "/characterJson/charJson/usingChar/" + id + ".json";
-        if (Directory.Exists(filepath) == false)
+        if (File.Exists(filepath) == false)
         {
             Debug.LogWarning("Character file not found: " + filepath);
             return null;
@@ -56,7 +57,10 @@ public class Character : SavableObject
     public double id;
     public double Hp;
     public double mana;
-    public string item;
+    public Item attackItem;
+    public Item defenseItem;
+    public string attackItemName;
+    public string defenseItemName;
     public double randomMultiplier;
     public bool alive;
     public double XP;
@@ -87,7 +91,38 @@ public class Character : SavableObject
         def_charstats.randomizeStats(randomMultiplier);
         characterImagePath = Application.dataPath + "characterImages/" + name + ".png";
         setmove();
+    }
 
+    public void reinitializeCharacter()
+    {
+        battle_charstats = def_charstats;
+        characterImagePath = Application.dataPath + "characterImages/" + name + ".png";
+        setmove();
+    }
+
+    public void endOfTurn()
+    {
+        if (Hp <= 0)
+        {
+            alive = false;
+        }
+
+        if (Hp >= battle_charstats.maxHp)
+        {
+            Hp = battle_charstats.maxHp;
+        }
+
+        if (mana > battle_charstats.maxMana)
+        {
+            mana = battle_charstats.maxMana;
+        }
+    }
+    
+    public void endOfBattle()
+    {
+        resetStats();
+        endOfTurn();
+        saveObject();
     }
 
     public void setmove()
@@ -99,6 +134,24 @@ public class Character : SavableObject
             Move move = new MoveInventory().getMove(moveName);
             moves[count] = move;
             count++;
+        }
+    }
+
+    public void equipItem(String item)
+    {
+        Item newItem = new ItemInventory().getItem(item);
+        if (newItem != null)
+        {
+            if (newItem.isAttackItem)
+            {
+                attackItem = newItem;
+                attackItemName = item;
+            }
+            else
+            {
+                defenseItem = newItem;
+                defenseItemName = item;
+            }
         }
     }
     

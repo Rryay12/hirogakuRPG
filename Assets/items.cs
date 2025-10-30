@@ -24,8 +24,26 @@ public class ItemInventory
 public class Item : SavableObject
 {
     public string name;
-    public string type; 
+    public bool consumable;
+    public bool isAttackItem;
+    public int effectiveTurnNo;
+    public int RemainingTurnNo;
     public Stats itemStats;
+
+    public void initialize()
+    {
+        RemainingTurnNo = effectiveTurnNo;
+    }
+
+    public void use()
+    {
+        RemainingTurnNo -= 1;
+    }
+
+    public bool isExpired()
+    {
+        return RemainingTurnNo == 0;
+    }
 
     public override void loadObject(bool willLoad = true)
     {
