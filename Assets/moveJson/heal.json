@@ -1,1 +1,1 @@
-{"name":"heal","isHeal":true,"phyDamage":0.0,"magDamage":0.0}
+{"name":"heal","healAmount":0.0,"phyDamage":0.0,"magDamage":0.0,"manaCost":5,"elixerCost":10}

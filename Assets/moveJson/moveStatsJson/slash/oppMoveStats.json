@@ -1,0 +1,13 @@
+{    
+    "maxHp":1,
+    "maxMana":1,
+    "phyAttack":1,
+    "phyDefence":1,
+    "magAttack":1,
+    "magDefence":1,
+    "charisma":1,
+    "speed":1,
+    "maxElixer":1,
+    "elixerRegen":1,
+    "manaRegen":1
+}

@@ -66,6 +66,7 @@ public class Character : SavableObject
     public double XP;
     public int level;
     public string characterImagePath;
+    public double elixer;
     public Move[] moves = new Move[4];
     public string[] moveNames;
 
@@ -116,6 +117,8 @@ public class Character : SavableObject
         {
             mana = battle_charstats.maxMana;
         }
+
+        saveObject();
     }
     
     public void endOfBattle()

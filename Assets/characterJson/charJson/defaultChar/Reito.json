@@ -6,6 +6,7 @@
     "item":"",
     "randomMultiplier":5,
     "alive":true,
+    "elixer":10,
     "xp":0,
     "level":1,
     "characterImagePath":"Assets/characterImages/reito.png",

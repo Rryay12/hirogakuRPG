@@ -14,6 +14,9 @@ public class Stats : SavableObject
     public double magDefence;
     public double charisma;
     public double speed;
+    public double maxElixer;
+    public double elixerRegen;
+    public double manaRegen;
 
     public void randomizeStats(double randomMultiplier)
     {
@@ -25,6 +28,9 @@ public class Stats : SavableObject
         magDefence += (UnityEngine.Random.value - 0.5) * randomMultiplier;
         charisma += (UnityEngine.Random.value - 0.5) * randomMultiplier;
         speed += (UnityEngine.Random.value - 0.5) * randomMultiplier;
+        maxElixer += (UnityEngine.Random.value - 0.5) * randomMultiplier;
+        elixerRegen += (UnityEngine.Random.value - 0.5) * randomMultiplier;
+        manaRegen += (UnityEngine.Random.value - 0.5) * randomMultiplier;
     }
 
 
@@ -38,6 +44,9 @@ public class Stats : SavableObject
         magDefence = statsChange.magDefence;
         charisma = statsChange.charisma;
         speed = statsChange.speed;
+        maxElixer = statsChange.maxElixer;
+        elixerRegen = statsChange.elixerRegen;
+        manaRegen = statsChange.manaRegen;
     }
     public void addStats(Stats statsChange)
     {
@@ -49,18 +58,24 @@ public class Stats : SavableObject
         magDefence += statsChange.magDefence;
         charisma += statsChange.charisma;
         speed += statsChange.speed;
+        maxElixer += statsChange.maxElixer;
+        elixerRegen += statsChange.elixerRegen;
+        manaRegen += statsChange.manaRegen;
     }
 
     public void multStats(Stats statsChange)
     {
-        maxHp = statsChange.maxHp;
-        maxMana = statsChange.maxMana;
-        phyAttack = statsChange.phyAttack;
-        phyDefence = statsChange.phyDefence;
-        magAttack = statsChange.magAttack;
-        magDefence = statsChange.magDefence;
-        charisma = statsChange.charisma;
-        speed = statsChange.speed;
+        maxHp *= statsChange.maxHp;
+        maxMana *= statsChange.maxMana;
+        phyAttack *= statsChange.phyAttack;
+        phyDefence *= statsChange.phyDefence;
+        magAttack *= statsChange.magAttack;
+        magDefence *= statsChange.magDefence;
+        charisma *= statsChange.charisma;
+        speed *= statsChange.speed;
+        maxElixer *= statsChange.maxElixer;
+        elixerRegen *= statsChange.elixerRegen;
+        manaRegen *= statsChange.manaRegen;
     }
 }
 

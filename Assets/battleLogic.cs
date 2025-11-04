@@ -2,11 +2,13 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Unity.VisualScripting;
+using System;
 
 [System.Serializable]
-public class battleLogic: MonoBehaviour
+public class battleLogic : MonoBehaviour
 {
     CharacterInventory playerInventory = new CharacterInventory();
+    MoveInventory moveInventory = new MoveInventory();
     Character[] playerCharactersInDeck;
     Character[] enemyCharactersInDeck;
     Character playerCharacter;
@@ -15,10 +17,80 @@ public class battleLogic: MonoBehaviour
     public Button moveButton1;
     public Button moveButton2;
     public Button moveButton3;
+    bool battleActive = false;
 
-    int turnCount = 0;
-    int actualTurn = 1; //1 for player, -1 for enemy
+    void Update()
+    {
+        Debug.Log(battleActive);
+        if (battleActive)
+        {
+            updateStats();
+            updateUI();
+            playerCharacter.endOfTurn();
+            enemyCharacter.endOfTurn();
+            Debug.Log("Player Elixer: " + playerCharacter.elixer + " Enemy Hp: " + enemyCharacter.Hp +"is enemy alive"+ enemyCharacter.isalive());
+        }
+        checkBattleOver();
+    }
 
+    public void checkBattleOver()
+    {
+        if (isAllDead(playerCharactersInDeck))
+        {
+            Debug.Log("Player has no remaining characters. You lose!");
+            endBattle();
+        }
+        else if (isAllDead(enemyCharactersInDeck))
+        {
+            Debug.Log("Enemy has no remaining characters. You win!");
+            endBattle();
+        }
+    }
+    public void updateStats()
+    {
+
+        playerCharacter.elixer = playerCharacter.elixer + playerCharacter.battle_charstats.elixerRegen * Time.deltaTime;
+        playerCharacter.mana = playerCharacter.mana + playerCharacter.battle_charstats.manaRegen * Time.deltaTime;
+        enemyCharacter.elixer = enemyCharacter.elixer + enemyCharacter.battle_charstats.elixerRegen * Time.deltaTime;
+        enemyCharacter.mana = enemyCharacter.mana + enemyCharacter.battle_charstats.manaRegen * Time.deltaTime;
+
+        if (playerCharacter.elixer > playerCharacter.battle_charstats.maxElixer)
+        {
+            playerCharacter.elixer = playerCharacter.battle_charstats.maxElixer;
+        }
+        if (enemyCharacter.elixer > enemyCharacter.battle_charstats.maxElixer)
+        {
+            enemyCharacter.elixer = enemyCharacter.battle_charstats.maxElixer;
+        }
+        if (playerCharacter.mana > playerCharacter.battle_charstats.maxMana)
+        {
+            playerCharacter.mana = playerCharacter.battle_charstats.maxMana;
+        }
+        if (enemyCharacter.mana > enemyCharacter.battle_charstats.maxMana)
+        {
+            enemyCharacter.mana = enemyCharacter.battle_charstats.maxMana;
+        }
+    }
+
+    public void updateUI()
+    {
+        updateButton(moveButton0);
+        updateButton(moveButton1);
+        updateButton(moveButton2);
+        updateButton(moveButton3);
+    }
+    
+    public void updateButton(Button button)
+    {
+        if( button.gameObject.activeSelf == false)
+        {
+            return;
+        }
+        GameObject cooldownTimer = button.transform.Find("elixerTimer").gameObject;
+        string movename = button.GetComponentInChildren<TextMeshProUGUI>().text;
+        double maxElixerMove = moveInventory.getMove(movename).elixerCost;
+        cooldownTimer.GetComponent<Image>().fillAmount = (float)Math.Min(playerCharacter.elixer / maxElixerMove,1f);
+    }
 
     //initiate the battle logic with two characters
     public void initializeBattle(characterDeck playerDeck, characterDeck enemyDeck)
@@ -29,6 +101,7 @@ public class battleLogic: MonoBehaviour
         playerCharacter = playerCharactersInDeck[0];
         enemyCharacter = enemyCharactersInDeck[0];
         initializeUI();
+        battleActive = true;
     }
 
     public void initializeCharacters()
@@ -48,6 +121,24 @@ public class battleLogic: MonoBehaviour
             }
         }
     }
+
+    public void endCharacters()
+    {
+        for (int i = 0; i < playerCharactersInDeck.Length; i++)
+        {
+            if (playerCharactersInDeck[i] != null)
+            {
+                playerCharactersInDeck[i].endOfBattle();
+            }
+        }
+        for (int i = 0; i < enemyCharactersInDeck.Length; i++)
+        {
+            if (enemyCharactersInDeck[i] != null)
+            {
+                enemyCharactersInDeck[i].endOfBattle();
+            }
+        }
+    }
     public void initializeUI()
     {
         initializeButtonText(moveButton0, 0);
@@ -61,29 +152,21 @@ public class battleLogic: MonoBehaviour
         Move tmpMove = playerCharacter.moves[id];
         if (tmpMove != null)
         {
-            button.gameObject.SetActive(true);   
+            button.gameObject.SetActive(true);
             TextMeshProUGUI text = button.GetComponentInChildren<TextMeshProUGUI>();
             button.GetComponentInChildren<TextMeshProUGUI>().text = tmpMove.name;
         }
         else
         {
-            button.gameObject.SetActive(false);   
+            button.gameObject.SetActive(false);
         }
     }
-    
+
     public void startBattle()
     {
         //start battle logic here
         playerCharacter.reinitializeCharacter();
         enemyCharacter.reinitializeCharacter();
-        if(playerCharacter.battle_charstats.charisma > enemyCharacter.battle_charstats.charisma)
-        {
-            actualTurn = 1; //player starts
-        }
-        else
-        {
-            actualTurn = -1; //enemy starts
-        }
     }
 
     public void playerturn(string action, Move move = null, Item item = null, int replacementCharId = -1)
@@ -99,7 +182,11 @@ public class battleLogic: MonoBehaviour
 
         else if (action == "move" && move != null)
         {
-            makeMove(playerCharacter, enemyCharacter, move);
+            makeMove(move, true);
+            playerCharacter.endOfTurn();
+            enemyCharacter.endOfTurn();
+            Debug.Log(playerCharacter.name + " used " + move.name);
+            Debug.Log("enemy "+enemyCharacter.name + " has " + enemyCharacter.Hp + " HP left.");
         }
         else if (action == "item" && item != null)
         {
@@ -107,7 +194,9 @@ public class battleLogic: MonoBehaviour
         }
         else if (action == "replace" && replacementCharId != -1)
         {
-            //replace character logic here
+            playerCharacter.endOfBattle();
+            playerCharacter = playerInventory.getCharacter(replacementCharId);;
+            playerCharacter.reinitializeCharacter();
         }
     }
     public void onRun()
@@ -122,7 +211,7 @@ public class battleLogic: MonoBehaviour
 
     public void replace(int charId)
     {
-        playerturn("replace",replacementCharId: charId);
+        playerturn("replace", replacementCharId: charId);
     }
 
     public void onMove(int moveID)
@@ -130,16 +219,17 @@ public class battleLogic: MonoBehaviour
         playerturn("move", move: playerCharacter.moves[moveID]);
     }
 
+
     public bool escapeCalculation()
     {
-        float no = Random.value;
+        float no = UnityEngine.Random.Range(0f, 1f);
         if (no < 0.3f)
         {
             return true;
         }
         return false;
     }
-    
+
 
     public void BattleLoop()
     {
@@ -147,7 +237,10 @@ public class battleLogic: MonoBehaviour
     }
     public void endBattle()
     {
-        //end battle logic here
+        battleActive = false;
+        Debug.Log("Battle Ended");
+        playerCharacter.endOfBattle();
+        enemyCharacter.endOfBattle();
     }
 
     public Character[] initializeCharacterDeck(characterDeck deck)
@@ -183,23 +276,60 @@ public class battleLogic: MonoBehaviour
     }
 
     //make a move from attacker to defender using the specified move
-    public void makeMove(Character attacker, Character defender, Move move)
+
+    public int calculateDamage(Character attacker, Character defender, Move move)
     {
-        if (move.isHeal == false)
+        double phyDamage = attacker.battle_charstats.phyAttack / 100 * move.phyDamage *(1-Math.Tanh(defender.battle_charstats.phyDefence / 500));
+        double magDamage = attacker.battle_charstats.magAttack / 100 * move.magDamage *(1-Math.Tanh(defender.battle_charstats.magDefence / 500));
+        int damage = Mathf.RoundToInt((float)(magDamage + phyDamage));
+        return damage;
+    }
+    public void makeMove(Move move, bool isPlayerMove)
+    {
+        if (isPlayerMove)
         {
-            double damage = attacker.battle_charstats.phyAttack / 100 * move.moveStats.phyAttack + attacker.battle_charstats.magAttack / 100 * move.moveStats.magAttack;
+            if (playerCharacter.elixer < move.elixerCost)
+            {
+                Debug.Log("Not enough elixer to perform the move!");
+                return;
+            }
+            if(playerCharacter.mana < move.manaCost)
+            {
+                Debug.Log("Not enough mana to perform the move!");
+                return;
+            }
+            double damage = calculateDamage(playerCharacter, enemyCharacter, move);
+            double heal = playerCharacter.battle_charstats.maxHp * move.healAmount;
             damage = Mathf.RoundToInt((float)damage);
-            defender.battle_charstats.changeStats(move.moveStats);
-            defender.Hp -= damage;
+            heal = Mathf.RoundToInt((float)heal);
+            playerCharacter.battle_charstats.multStats(move.selfMoveStats);
+            enemyCharacter.battle_charstats.multStats(move.oppMoveStats);
+            enemyCharacter.Hp -= (int)damage;
+            playerCharacter.Hp += (int)heal;
+            playerCharacter.elixer -= move.elixerCost;
         }
         else
         {
-            double heal = attacker.battle_charstats.phyAttack / 100 * move.moveStats.phyAttack + attacker.battle_charstats.magAttack / 100 * move.moveStats.magAttack;
+            if (enemyCharacter.elixer < move.elixerCost)
+            {
+                Debug.Log("Enemy does not have enough elixer to perform the move!");
+                return;
+            }
+            if (enemyCharacter.mana < move.manaCost){
+                Debug.Log("Enemy does not have enough mana to perform the move!");
+                return;
+            }
+            double damage = calculateDamage(enemyCharacter, playerCharacter, move);
+            double heal = enemyCharacter.battle_charstats.maxHp * move.healAmount;
+            damage = Mathf.RoundToInt((float)damage);
             heal = Mathf.RoundToInt((float)heal);
-            attacker.battle_charstats.changeStats(move.moveStats);
-            attacker.Hp += heal;
-            if (defender.Hp > defender.def_charstats.maxHp) defender.Hp = defender.def_charstats.maxHp;
+            enemyCharacter.battle_charstats.changeStats(move.selfMoveStats);
+            playerCharacter.Hp -= damage;
+            enemyCharacter.Hp += (int)heal;
+            playerCharacter.battle_charstats.changeStats(move.oppMoveStats);
+            enemyCharacter.elixer -= move.elixerCost;
         }
+
     }
 }
 

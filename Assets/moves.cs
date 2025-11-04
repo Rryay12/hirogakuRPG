@@ -17,16 +17,19 @@ public class MoveInventory
 public class Move : SavableObject
 {
     public string name;
-    public bool isHeal;
-    public Stats moveStats;
+    public Stats oppMoveStats;
+    public Stats selfMoveStats;
     public double phyDamage;
     public double magDamage;
+    public double healAmount;
+    public double manaCost;
+    public double elixerCost;
 
     public override void loadObject(bool willLoad = true)
     {
         Debug.Log(name);
         SaveManager manager = new SaveManager();
-        string path = Application.dataPath + "/moveJson/moveStatsJson/" + name + "Stats.json";
-        moveStats = manager.load<Stats>(path);
+        oppMoveStats = manager.load<Stats>(Application.dataPath + "/moveJson/moveStatsJson/" + name + "/oppMoveStats.json");
+        selfMoveStats = manager.load<Stats>(Application.dataPath + "/moveJson/moveStatsJson/" + name + "/selfMoveStats.json");
     }
 }
